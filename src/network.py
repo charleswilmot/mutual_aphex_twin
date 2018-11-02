@@ -3,10 +3,25 @@ import tensorflow as tf
 
 class NetMaker:
     def __init__(self, network_dim):
-        pass
+        self.network_dim = network_dim
+        self._define_variables()
+
+    def _define_variables(self):
+        self.weights = []
+        self.biases = []
+        for in_dim, out_dim in zip(self.network_dim, self.network_dim[1:]):
+            self.weights.append(tf.Variables(???))
+            self.biases.append(tf.Variables(???))
+        self.variables = self.weights + self.biases
+
+    def _define_layer(self, prev, W, B):
+        return tf.nn.relu(tf.matmul(prev, W) + B)
 
     def __call__(self, inp):
-        pass
+        prev = inp
+        for var in zip(self.weights, self.biases):
+            prev = self._define_layer(prev, *var)
+        return prev
 
 
 networks = {"AA": {"latent": some_placeholder_with_default,
@@ -33,7 +48,58 @@ train_op = tf.train.SomeOptimizer(lr).minimize(sum_of_losses)
 iterators = {"A": some_tf_database_iterator,
              "B": some_tf_database_iterator}
 
-train_tensors = {"networks": networks,
-                 "losses": losses,
-                 "train_op": train_ops,
-                 "iterators": iterators}
+tensors = {"networks": networks,
+           "losses": losses,
+           "train_op": train_ops,
+           "iterators": iterators}
+
+
+network_makers = {"AA": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
+                  "BA": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
+                  "AB": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
+                  "BB": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker}}
+
+
+def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
+    if mode == "early_BN":
+        return [start_dim] + [end_dim] * nlayers if start_dim > end_dim else [start_dim] * nlayers + [end_dim]
+    if mode == "late_BN":
+        return [start_dim] + [end_dim] * nlayers if start_dim < end_dim else [start_dim] * nlayers + [end_dim]
+    if mode == "linear":
+        return list(range(start_dim, end_dim, int((-start_dim + end_dim) // nlayers)))[:nlayers] + [end_dim]
+
+
+def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode):
+    network_makers = {}  # see line 57
+    # use the "automatic_layer_dim" function
+    return network_makers
+
+
+def get_iterators(???):
+    pass
+
+
+def get_networks(network_makers, iterators):
+    networks = {}
+    return networks
+
+
+def get_losses(networks):
+    losses = {}
+    return losses
+
+
+def get_train_op(losses):
+    return train_op
+
+
+def get_tensors(network_makers, ???):
+    iterators = get_iterators(???)
+    networks = get_networks(network_makers, iterators)
+    losses = get_losses(networks)
+    train_op = get_train_op(losses)
+    tensors = {"networks": networks,
+               "losses": losses,
+               "train_op": train_ops,
+               "iterators": iterators}
+    return tensors

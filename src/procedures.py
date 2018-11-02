@@ -32,19 +32,40 @@ train_tensors = {"networks": networks,
 
 
 def train(sess, train_op, losses, nbatches):
+    # returns the mean of each loss averaged on nbatches
     pass
 
 
-def test(sess, networks, losses, ninterpolations):
+def test(sess, networks, losses, ninterpolations, nstddev):
+    # returns the mean of each loss averaged on training set (as dict) and n reconstructions after latent space interpolation for each net (as dict) (plus original image used... complex I know)
     pass
 
 
-def split_mnist_interpolation_plot(ax, reconstructions):
-    pass
+def split_mnist_recreate(A, B):
+    # concats left / right parts of mnist
+    return C = ???
 
 
-def interlaced_mnist_interpolation_plot(ax, reconstructions):
-    pass
+def interlaced_mnist_recreate(A, B):
+    # reinterlace parts of mnist
+    return C = ???
+
+
+def mnist_interpolation_plot(fig, recreated):
+    ax = fig.add_subplot(321)
+    plot_something(ax, recreated["something"], recreated["something_else"])
+    ax = fig.add_subplot(322)
+    plot_something_else(ax, recreated["something"], recreated["something_else"])
+
+
+def split_mnist_interpolation_plot(fig, reconstructions):
+    recreated = split_mnist_recreate(reconstructions["something_A"], reconstructions["something_B"])
+    mnist_interpolation_plot(fig, recreated)
+
+
+def interlaced_mnist_interpolation_plot(fig, reconstructions):
+    recreated = interlaced_mnist_recreate(reconstructions["something_A"], reconstructions["something_B"])
+    mnist_interpolation_plot(fig, recreated)
 
 
 def simple_loss_plot(ax):
