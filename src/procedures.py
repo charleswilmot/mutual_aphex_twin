@@ -49,15 +49,24 @@ def left_right_mnist_recreate(A, B):
 
 
 def top_bottom_mnist_recreate(A, B):
-    return C = ???
+    C = np.zeros((A.shape[0], 28, 28), dtype=np.uint8)
+    C[:, :14, :] = (((A + 1) * 255) / 2).astype(np.uint8)
+    C[:, 14:, :] = (((B + 1) * 255) / 2).astype(np.uint8)
+    return C
 
 
 def left_right_interlaced_mnist_recreate(A, B):
-    return C = ???
+    C = np.zeros((A.shape[0], 28, 28), dtype=np.uint8)
+    C[:, :, 0::2] = (((A + 1) * 255) / 2).astype(np.uint8)
+    C[:, :, 1::2] = (((B + 1) * 255) / 2).astype(np.uint8)
+    return C
 
 
 def top_bottom_interlaced_mnist_recreate(A, B):
-    return C = ???
+    C = np.zeros((A.shape[0], 28, 28), dtype=np.uint8)
+    C[:, 0::2, :] = (((A + 1) * 255) / 2).astype(np.uint8)
+    C[:, 1::2, :] = (((B + 1) * 255) / 2).astype(np.uint8)
+    return C
 
 
 def mnist_interpolation_plot(fig, recreated):
