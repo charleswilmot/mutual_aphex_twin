@@ -45,13 +45,12 @@ losses = {"AA": None,
 
 train_op = tf.train.SomeOptimizer(lr).minimize(sum_of_losses)
 
-iterators = {"A": some_tf_database_iterator,
-             "B": some_tf_database_iterator}
+iterator = some_tf_database_iterator
 
 tensors = {"networks": networks,
            "losses": losses,
            "train_op": train_ops,
-           "iterators": iterators}
+           "iterator": iterator}
 
 
 network_makers = {"AA": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
@@ -75,11 +74,12 @@ def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB
     return network_makers
 
 
-def get_iterators(???):
+def get_iterator(???):
+    # already implemented in dataio.py
     pass
 
 
-def get_networks(network_makers, iterators):
+def get_networks(network_makers, iterator):
     networks = {}
     return networks
 
@@ -94,12 +94,12 @@ def get_train_op(losses):
 
 
 def get_tensors(network_makers, ???):
-    iterators = get_iterators(???)
-    networks = get_networks(network_makers, iterators)
+    iterator = get_iterator(???)
+    networks = get_networks(network_makers, iterator)
     losses = get_losses(networks)
     train_op = get_train_op(losses)
     tensors = {"networks": networks,
                "losses": losses,
                "train_op": train_ops,
-               "iterators": iterators}
+               "iterator": iterator}
     return tensors
