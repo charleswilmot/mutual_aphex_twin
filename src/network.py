@@ -14,7 +14,7 @@ class NetMaker:
             # TODO
             self.weights.append(tf.Variable(tf.truncated_normal([in_dim, out_dim])))
             self.biases.append(tf.Variable(tf.truncated_normal([out_dim])))
-            
+
         self.variables = self.weights + self.biases
 
     def _define_layer(self, prev, W, B):
@@ -37,19 +37,19 @@ def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
 
 
 def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode, nlayers):
-    network_makers = defaultdict()  # see line 57
+    network_makers = defaultdict()
 
-    network_maker["AA"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AA, nlayers, mode))
-    network_maker["AA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AA, dim_A, nlayers, mode))
+    network_makers["AA"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AA, nlayers, mode))
+    network_makers["AA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AA, dim_A, nlayers, mode))
 
-    network_maker["BB"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BB, nlayers, mode))
-    network_maker["BB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BB, dim_B, nlayers, mode))
+    network_makers["BB"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BB, nlayers, mode))
+    network_makers["BB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BB, dim_B, nlayers, mode))
 
-    network_maker["AB"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AB, nlayers, mode))
-    network_maker["AB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AB, dim_B, nlayers, mode))
+    network_makers["AB"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AB, nlayers, mode))
+    network_makers["AB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AB, dim_B, nlayers, mode))
 
-    network_maker["BA"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BA, nlayers, mode))
-    network_maker["BA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BA, dim_A, nlayers, mode))
+    network_makers["BA"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BA, nlayers, mode))
+    network_makers["BA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BA, dim_A, nlayers, mode))
 
     return network_makers
 
