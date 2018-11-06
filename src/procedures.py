@@ -36,7 +36,7 @@ def train(sess, train_op, losses, nbatches):
     pass
 
 
-def test(sess, networks, losses, ninterpolations, nstddev):
+def test(sess, networks, losses, iterator, ninterpolations, nstddev, nbatches):
     # returns the mean of each loss averaged on training set (as dict) and n reconstructions after latent space interpolation for each net (as dict) (plus original image used... complex I know)
     pass
 
@@ -81,5 +81,5 @@ def simple_loss_plot(ax):
     pass
 
 
-def run(train_tensors, test_tensors, losses_plot_function, interpolation_plot_function):
+def run(tensors, losses_plot_function, interpolation_plot_function):
     pass

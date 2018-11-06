@@ -75,18 +75,33 @@ def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB
     return network_makers
 
 
-def get_iterator(???):
-    # already implemented in dataio.py
-    pass
-
-
 def get_networks(network_makers, iterator):
-    networks = {}
+    A, B = iterator.get_next()
+    for key in network_makers:
+        inp = A if key[0] == 'A' else B
+        latent = network_makers[key]["inp_latent"](inp)
+        networks[key] = {}
+        networks[key]["latent"] = tf.placeholder_with_default(latent, shape=latent.shape.as_list())
+        if key in ["AB", "BA"]:
+            networks[key]["out"] = network_makers[key]["latent_out"](networks[key]["latent"])
+    con = tf.concat([networks["AA"]["latent"], networks["BA"]["latent"]], axis=0)
+    networks["AA"]["out"] = network_makers["AA"]["latent_out"](con)
+    con = tf.concat([networks["BB"]["latent"], networks["AB"]["latent"]], axis=0)
+    networks["BB"]["out"] = network_makers["BB"]["latent_out"](con)
     return networks
 
 
-def get_losses(networks):
-    losses = {}
+def mse(a, b):
+    return tf.reduce_mean((a - b) * (a - b))
+
+
+def get_losses(networks, iterator):
+    A, B = iterator.get_next()
+    losses = {"AA": mse(A, networks["AA"]["out"]),
+              "BA": mse(A, networks["BA"]["out"]),
+              "AB": mse(B, networks["AB"]["out"]),
+              "BB": mse(B, networks["BB"]["out"]),
+              "equal": mse(networks["AB"]["latent"], networks["BA"]["latent"])}
     return losses
 
 
