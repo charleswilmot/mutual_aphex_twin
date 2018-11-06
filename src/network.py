@@ -10,6 +10,7 @@ class NetMaker:
         self.weights = []
         self.biases = []
         for in_dim, out_dim in zip(self.network_dim, self.network_dim[1:]):
+            # TODO
             self.weights.append(tf.Variables(???))
             self.biases.append(tf.Variables(???))
         self.variables = self.weights + self.biases
@@ -68,7 +69,7 @@ def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
         return list(range(start_dim, end_dim, int((-start_dim + end_dim) // nlayers)))[:nlayers] + [end_dim]
 
 
-def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode):
+def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode, nlayers):
     network_makers = {}  # see line 57
     # use the "automatic_layer_dim" function
     return network_makers
@@ -93,8 +94,7 @@ def get_train_op(losses):
     return train_op
 
 
-def get_tensors(network_makers, ???):
-    iterator = get_iterator(???)
+def get_tensors(network_makers, iterator):
     networks = get_networks(network_makers, iterator)
     losses = get_losses(networks)
     train_op = get_train_op(losses)

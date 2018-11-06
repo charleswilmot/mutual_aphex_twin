@@ -41,13 +41,22 @@ def test(sess, networks, losses, ninterpolations, nstddev):
     pass
 
 
-def split_mnist_recreate(A, B):
-    # concats left / right parts of mnist
+def left_right_mnist_recreate(A, B):
+    C = np.zeros((A.shape[0], 28, 28), dtype=np.uint8)
+    C[:, :, :14] = (((A + 1) * 255) / 2).astype(np.uint8)
+    C[:, :, 14:] = (((B + 1) * 255) / 2).astype(np.uint8)
+    return C
+
+
+def top_bottom_mnist_recreate(A, B):
     return C = ???
 
 
-def interlaced_mnist_recreate(A, B):
-    # reinterlace parts of mnist
+def left_right_interlaced_mnist_recreate(A, B):
+    return C = ???
+
+
+def top_bottom_interlaced_mnist_recreate(A, B):
     return C = ???
 
 
