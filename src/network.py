@@ -1,4 +1,5 @@
 import tensorflow as tf
+from collecitons import defaultdict
 
 
 class NetMaker:
@@ -70,8 +71,20 @@ def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
 
 
 def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode, nlayers):
-    network_makers = {}  # see line 57
-    # use the "automatic_layer_dim" function
+    network_makers = defaultdict()  # see line 57
+    
+    network_maker["AA"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AA, nlayers, mode))
+    network_maker["AA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AA, dim_A, nlayers, mode))
+
+    network_maker["BB"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BB, nlayers, mode))
+    network_maker["BB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BB, dim_B, nlayers, mode))
+
+    network_maker["AB"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AB, nlayers, mode))
+    network_maker["AB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AB, dim_B, nlayers, mode))
+
+    network_maker["BA"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BA, nlayers, mode))
+    network_maker["BA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BA, dim_A, nlayers, mode))
+
     return network_makers
 
 
