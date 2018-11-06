@@ -1,5 +1,5 @@
 import tensorflow as tf
-from collecitons import defaultdict
+from collections import defaultdict
 
 
 class NetMaker:
@@ -12,8 +12,9 @@ class NetMaker:
         self.biases = []
         for in_dim, out_dim in zip(self.network_dim, self.network_dim[1:]):
             # TODO
-            self.weights.append(tf.Variables(???))
-            self.biases.append(tf.Variables(???))
+            self.weights.append(tf.Variable(tf.truncated_normal([in_dim, out_dim])))
+            self.biases.append(tf.Variable(tf.truncated_normal([out_dim])))
+            
         self.variables = self.weights + self.biases
 
     def _define_layer(self, prev, W, B):
@@ -103,7 +104,7 @@ def get_networks(network_makers, iterator):
     networks["BB"]["out"] = network_makers["BB"]["latent_out"](con)
     return networks
 
-
+0
 def mse(a, b):
     return tf.reduce_mean((a - b) * (a - b))
 
