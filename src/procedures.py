@@ -103,4 +103,5 @@ def run(tensors, losses_plot_function, interpolation_plot_function):
     nbatches = 100
     with tf.Session() as sess:
         sess.run(tensors["iterator"].initializer)
-        train(sess, tensors["train_op"], tensors["losses"], nbatches)
+        losses = train(sess, tensors["train_op"], tensors["losses"], nbatches)
+        print(losses)
