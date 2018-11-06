@@ -119,6 +119,8 @@ def get_losses(networks, iterator):
 
 
 def get_train_op(losses):
+    sum_of_losses = losses["AA"] + losses["BB"] + losses["AB"] + losses["BA"] + losses["equal"]
+    train_op = tf.train.AdamOptimizer().minimize(sum_of_losses)
     return train_op
 
 
