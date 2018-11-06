@@ -26,41 +26,6 @@ class NetMaker:
         return prev
 
 
-networks = {"AA": {"latent": some_placeholder_with_default,
-                   "latent_statistics": some_moving_mean_stddev_of_the_latent_vect,
-                   "out": network_output_tensor},
-            "BA": {"latent": some_placeholder_with_default,
-                   "latent_statistics": some_moving_mean_stddev_of_the_latent_vect,
-                   "out": network_output_tensor},
-            "AB": {"latent": some_placeholder_with_default,
-                   "latent_statistics": some_moving_mean_stddev_of_the_latent_vect,
-                   "out": network_output_tensor},
-            "BB": {"latent": some_placeholder_with_default,
-                   "latent_statistics": some_moving_mean_stddev_of_the_latent_vect,
-                   "out": network_output_tensor}}
-
-losses = {"AA": None,
-          "BA": None,
-          "AB": None,
-          "BB": None,
-          "equal": AB_latent_equals_BA_latent_mse}
-
-train_op = tf.train.SomeOptimizer(lr).minimize(sum_of_losses)
-
-iterator = some_tf_database_iterator
-
-tensors = {"networks": networks,
-           "losses": losses,
-           "train_op": train_ops,
-           "iterator": iterator}
-
-
-network_makers = {"AA": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
-                  "BA": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
-                  "AB": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker},
-                  "BB": {"inp_latent": some_netmaker, "latent_out": some_other_netmaker}}
-
-
 def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
     if mode == "early_BN":
         return [start_dim] + [end_dim] * nlayers if start_dim > end_dim else [start_dim] * nlayers + [end_dim]
@@ -72,7 +37,7 @@ def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
 
 def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode, nlayers):
     network_makers = defaultdict()  # see line 57
-    
+
     network_maker["AA"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AA, nlayers, mode))
     network_maker["AA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AA, dim_A, nlayers, mode))
 

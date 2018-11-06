@@ -33,7 +33,16 @@ train_tensors = {"networks": networks,
 
 def train(sess, train_op, losses, nbatches):
     # returns the mean of each loss averaged on nbatches
-    pass
+    if nbatches <= 0:
+        raise ValueError("Can't compute {} batches (<=0)".format(nbatches))
+    _, np_losses = sess.run([train_op, losses])
+    for i in range(nbatches - 1):
+        _, tmp_np_losses = sess.run([train_op, losses])
+        for key in tmp_np_losses:
+            np_losses[key] += tmp_np_losses[key]
+    for key in np_losses:
+        np_losses[key] /= nbatches
+    return np_losses
 
 
 def test(sess, networks, losses, iterator, ninterpolations, nstddev, nbatches):
@@ -91,4 +100,7 @@ def simple_loss_plot(ax):
 
 
 def run(tensors, losses_plot_function, interpolation_plot_function):
-    pass
+    nbatches = 100
+    with tf.Session() as sess:
+        sess.run(tensors["iterator"].initializer)
+        train(sess, tensors["train_op"], tensors["losses"], nbatches)
