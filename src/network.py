@@ -2,6 +2,10 @@ import tensorflow as tf
 from collections import defaultdict
 
 
+def lrelu(x):
+    return 1 / 3 * x + 2 / 3 * tf.nn.relu(x)
+
+
 class NetMaker:
     def __init__(self, network_dim):
         self.network_dim = network_dim
@@ -11,14 +15,13 @@ class NetMaker:
         self.weights = []
         self.biases = []
         for in_dim, out_dim in zip(self.network_dim, self.network_dim[1:]):
-            # TODO
-            self.weights.append(tf.Variable(tf.truncated_normal([in_dim, out_dim])))
-            self.biases.append(tf.Variable(tf.truncated_normal([out_dim])))
+            self.weights.append(tf.Variable(tf.truncated_normal([in_dim, out_dim], stddev=0.01)))
+            self.biases.append(tf.Variable(tf.zeros([out_dim])))
 
         self.variables = self.weights + self.biases
 
     def _define_layer(self, prev, W, B):
-        return tf.nn.relu(tf.matmul(prev, W) + B)
+        return lrelu(tf.matmul(prev, W) + B)
 
     def __call__(self, inp):
         prev = inp
@@ -37,18 +40,18 @@ def automatic_layer_dim(start_dim, end_dim, nlayers, mode):
 
 
 def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode, nlayers):
-    network_makers = defaultdict()
+    network_makers = defaultdict(dict)
 
     network_makers["AA"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AA, nlayers, mode))
-    network_makers["AA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AA, dim_A, nlayers, mode))
+    network_makers["AA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AA + dim_latent_BA, dim_A, nlayers, mode))
 
     network_makers["BB"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BB, nlayers, mode))
-    network_makers["BB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BB, dim_B, nlayers, mode))
+    network_makers["BB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BB + dim_latent_AB, dim_B, nlayers, mode))
 
-    network_makers["AB"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AB, nlayers, mode))
+    network_makers["AB"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_A, dim_latent_AB, nlayers, mode))
     network_makers["AB"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_AB, dim_B, nlayers, mode))
 
-    network_makers["BA"]["imp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BA, nlayers, mode))
+    network_makers["BA"]["inp_latent"] = NetMaker(automatic_layer_dim(dim_B, dim_latent_BA, nlayers, mode))
     network_makers["BA"]["latent_out"] = NetMaker(automatic_layer_dim(dim_latent_BA, dim_A, nlayers, mode))
 
     return network_makers
@@ -56,6 +59,7 @@ def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB
 
 def get_networks(network_makers, iterator):
     A, B = iterator.get_next()
+    networks = {}
     for key in network_makers:
         inp = A if key[0] == 'A' else B
         latent = network_makers[key]["inp_latent"](inp)
@@ -63,9 +67,9 @@ def get_networks(network_makers, iterator):
         networks[key]["latent"] = tf.placeholder_with_default(latent, shape=latent.shape.as_list())
         if key in ["AB", "BA"]:
             networks[key]["out"] = network_makers[key]["latent_out"](networks[key]["latent"])
-    con = tf.concat([networks["AA"]["latent"], networks["BA"]["latent"]], axis=0)
+    con = tf.concat([networks["AA"]["latent"], networks["BA"]["latent"]], axis=1)
     networks["AA"]["out"] = network_makers["AA"]["latent_out"](con)
-    con = tf.concat([networks["BB"]["latent"], networks["AB"]["latent"]], axis=0)
+    con = tf.concat([networks["BB"]["latent"], networks["AB"]["latent"]], axis=1)
     networks["BB"]["out"] = network_makers["BB"]["latent_out"](con)
     return networks
 
@@ -92,10 +96,10 @@ def get_train_op(losses):
 
 def get_tensors(network_makers, iterator):
     networks = get_networks(network_makers, iterator)
-    losses = get_losses(networks)
+    losses = get_losses(networks, iterator)
     train_op = get_train_op(losses)
     tensors = {"networks": networks,
                "losses": losses,
-               "train_op": train_ops,
+               "train_op": train_op,
                "iterator": iterator}
     return tensors

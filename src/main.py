@@ -17,4 +17,4 @@ network_makers = network.get_network_makers(
     dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB, dim_latent_BB, mode, nlayers)
 tensors = network.get_tensors(network_makers, iterator)
 
-procedure.run(tensors, None, None)
+procedures.run(tensors, None, None)
