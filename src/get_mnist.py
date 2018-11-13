@@ -38,7 +38,8 @@ def extract_data(filename, num_images):
 
 if __name__ == "__main__":
     data = extract_data(maybe_download("train-images-idx3-ubyte.gz"), 60000)
-    dataio.to_tfrerord(data[:, :, 14:], data[:, :, 14:], WORK_DIRECTORY + "left_right_mnist.tfr")
+    dataio.to_tfrerord(data[:, :, :14], data[:, :, 14:], WORK_DIRECTORY + "left_right_mnist.tfr")
     dataio.to_tfrerord(data[:, :14, :], data[:, 14:, :], WORK_DIRECTORY + "top_bottom_mnist.tfr")
     dataio.to_tfrerord(data[:, :, 0::2], data[:, :, 1::2], WORK_DIRECTORY + "left_right_interlaced_mnist.tfr")
     dataio.to_tfrerord(data[:, 0::2, :], data[:, 1::2, :], WORK_DIRECTORY + "top_bottom_interlaced_mnist.tfr")
+    dataio.to_tfrerord(data, data, WORK_DIRECTORY + "mnist.tfr")

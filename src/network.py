@@ -57,8 +57,7 @@ def get_network_makers(dim_A, dim_B, dim_latent_AA, dim_latent_BA, dim_latent_AB
     return network_makers
 
 
-def get_networks(network_makers, iterator):
-    A, B = iterator.get_next()
+def get_networks(network_makers, A, B):
     networks = {}
     for key in network_makers:
         inp = A if key[0] == 'A' else B
@@ -73,13 +72,12 @@ def get_networks(network_makers, iterator):
     networks["BB"]["out"] = network_makers["BB"]["latent_out"](con)
     return networks
 
-0
+
 def mse(a, b):
     return tf.reduce_mean((a - b) * (a - b))
 
 
-def get_losses(networks, iterator):
-    A, B = iterator.get_next()
+def get_losses(networks, A, B):
     losses = {"AA": mse(A, networks["AA"]["out"]),
               "BA": mse(A, networks["BA"]["out"]),
               "AB": mse(B, networks["AB"]["out"]),
@@ -95,11 +93,15 @@ def get_train_op(losses):
 
 
 def get_tensors(network_makers, iterator):
-    networks = get_networks(network_makers, iterator)
-    losses = get_losses(networks, iterator)
+    A, B = iterator.get_next()
+    A = tf.placeholder_with_default(A, A.shape.as_list())
+    B = tf.placeholder_with_default(B, B.shape.as_list())
+    networks = get_networks(network_makers, A, B)
+    losses = get_losses(networks, A, B)
     train_op = get_train_op(losses)
     tensors = {"networks": networks,
                "losses": losses,
                "train_op": train_op,
-               "iterator": iterator}
+               "iterator": iterator,
+               "inputs": (A, B)}
     return tensors
